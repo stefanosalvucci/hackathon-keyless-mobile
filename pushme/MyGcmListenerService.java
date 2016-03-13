@@ -30,9 +30,14 @@ public class MyGcmListenerService extends GcmListenerService {
         Log.d("NOTIFICATION", "From: " + from);
         String message = data.getString("message");
         Log.d("NOTIFICATION", "Message: " + message);
-        Log.d("NOTIFICATION","STATUS " + data.getString("status"));
+        Log.d("NOTIFICATION", "STATUS " + data.getString("status"));
 
         System.out.println(data.toString());
+
+        Intent intent=new Intent();
+        intent.setAction("com.toxy.LOAD_URL");
+        intent.putExtra("url", "ciao");
+        sendBroadcast(intent);
 
         if (from.startsWith("/topics/")) {
             // message received from some topic.
@@ -40,7 +45,10 @@ public class MyGcmListenerService extends GcmListenerService {
             // normal downstream message.
         }
 
-        notify(data.getString("status"));
+        if(!MainActivity.schermataAttiva)notify(data.getString("status"));
+
+
+
         // ...
     }
 

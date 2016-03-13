@@ -1,10 +1,14 @@
 package com.iotworkshop.keyless;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -27,6 +31,9 @@ import cz.msebera.android.httpclient.Header;
 public class MainActivity extends AppCompatActivity {
     private TextView tvDoorState;
     private Button bntDoorAction;
+
+
+    public static boolean schermataAttiva = false;
 //    private ProgressBar progressBar;
 //    CircularProgressButton btnNeew;
     //TODO notifica push che aggiorna la schermata
@@ -51,10 +58,27 @@ public class MainActivity extends AppCompatActivity {
     String status_url = baseUrl + "status_door.json?event[requester]=android";
     String inu;
     String toggle_url = baseUrl + "toggle_door.json?event[requester]=android";
+    private JsonHttpResponseHandler handler;
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        schermataAttiva = false;
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        schermataAttiva = true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        schermataAttiva = true;
+
         setContentView(R.layout.activity_main);
 
         String authorizedEntity = "com.iotworkshop.keyless"; // Project id from Google Developer Console
@@ -70,8 +94,9 @@ public class MainActivity extends AppCompatActivity {
         tvDoorState = (TextView)findViewById(R.id.tvDoorState);
 
 //        progressBar = (ProgressBar)findViewById(R.id.progress);
-
-        final JsonHttpResponseHandler handler;
+        getIntent().getStringExtra("");
+        IntentFilter filter = new IntentFilter("com.toxy.LOAD_URL");
+        this.registerReceiver(new Receiver(), filter);
 
         handler = new JsonHttpResponseHandler(){
             @Override
@@ -130,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         bntDoorAction.setText("Loading...");
-        KeylessApplication.client.get(toggle_url, handler);
+        KeylessApplication.client.get(status_url, handler);
 
     }
 
@@ -141,12 +166,13 @@ public class MainActivity extends AppCompatActivity {
 
                 tvDoorState.setText("The door is opened");
                 bntDoorAction.setText("CLOSE");
-
+                bntDoorAction.setBackgroundColor(Color.RED);
                 break;
 
             case "closed":
 
                 tvDoorState.setText("The door is closed");
+                bntDoorAction.setBackgroundColor(Color.GREEN);
                 bntDoorAction.setText("OPEN");
                 break;
 
@@ -166,6 +192,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        schermataAttiva = true;
 //        KeylessApplication.client.get(status_url, new JsonHttpResponseHandler() {
 //            @Override
 //            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -210,5 +237,16 @@ public class MainActivity extends AppCompatActivity {
 //
 //
 //        });
+    }
+
+    private class Receiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context arg0, Intent arg1) {
+            System.out.println("ON RECEIVED CALLED");
+            arg1.getStringExtra("");
+            bntDoorAction.setText("Loading...");
+            KeylessApplication.client.get(status_url,handler);
+        }
     }
 }
