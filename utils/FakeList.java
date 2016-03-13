@@ -26,6 +26,7 @@ public class FakeList extends AppCompatActivity{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setTitle("Events list");
         setContentView(R.layout.lista);
         ListView listView;
