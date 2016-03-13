@@ -4,6 +4,10 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
@@ -12,6 +16,8 @@ import android.util.Log;
 import com.google.android.gms.gcm.GcmListenerService;
 import com.iotworkshop.keyless.MainActivity;
 import com.iotworkshop.keyless.R;
+
+import java.io.IOException;
 
 /**
  * Created by wakir on 12/03/2016.
@@ -40,6 +46,8 @@ public class MyGcmListenerService extends GcmListenerService {
 
 
     private void notify(String message){
+
+        sound();
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.ic_lock_open_white_24dp)
@@ -68,5 +76,41 @@ public class MyGcmListenerService extends GcmListenerService {
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 // mId allows you to update the notification later on.
         mNotificationManager.notify(0, mBuilder.build());
+    }
+
+
+    private void sound(){
+
+
+
+
+        Uri defaultRingtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+        MediaPlayer mediaPlayer = new MediaPlayer();
+
+        try {
+            mediaPlayer.setDataSource(getApplicationContext(), defaultRingtoneUri);
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
+            mediaPlayer.prepare();
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
+                @Override
+                public void onCompletion(MediaPlayer mp)
+                {
+                    mp.release();
+                }
+            });
+            mediaPlayer.start();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
     }
 }

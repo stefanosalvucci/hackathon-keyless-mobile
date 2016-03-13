@@ -10,6 +10,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dd.CircularProgressButton;
 import com.google.android.gms.iid.InstanceID;
 import com.greenfrvr.rubberloader.RubberLoaderView;
 import com.iotworkshop.keyless.pushme.RegistrationIntentService;
@@ -26,7 +27,11 @@ import cz.msebera.android.httpclient.Header;
 public class MainActivity extends AppCompatActivity {
     private TextView tvDoorState;
     private Button bntDoorAction;
-    private ProgressBar progressBar;
+//    private ProgressBar progressBar;
+//    CircularProgressButton btnNeew;
+    //TODO notifica push che aggiorna la schermata
+    //
+
 
     /**
      *
@@ -59,11 +64,12 @@ public class MainActivity extends AppCompatActivity {
 //        startService(new Intent(this, RegistrationIntentService.class));
 
 
-        bntDoorAction = (Button)findViewById(R.id.btnDoorAction);
+        bntDoorAction = (Button)findViewById(R.id.btnWithText);
 
+//        btnNeew = (CircularProgressButton)findViewById(R.id.btnWithText);
         tvDoorState = (TextView)findViewById(R.id.tvDoorState);
 
-        progressBar = (ProgressBar)findViewById(R.id.progress);
+//        progressBar = (ProgressBar)findViewById(R.id.progress);
 
         final JsonHttpResponseHandler handler;
 
@@ -80,28 +86,37 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
 
-
-                    progressBar.setVisibility(View.GONE);
                 }
 
+            }
+
+            @Override
+            public void onProgress(long bytesWritten, long totalSize) {
+                super.onProgress(bytesWritten, totalSize);
+
+//                btnNeew.setProgress((int) (totalSize/bytesWritten));
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 super.onFailure(statusCode, headers, responseString, throwable);
                 errorToast();
+                bntDoorAction.setText("Error");
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 super.onFailure(statusCode, headers, throwable, errorResponse);
                 errorToast();
+                bntDoorAction.setText("Error");
+
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
                 super.onFailure(statusCode, headers, throwable, errorResponse);
                 errorToast();
+                bntDoorAction.setText("Error");
 
             }
         };
@@ -109,9 +124,13 @@ public class MainActivity extends AppCompatActivity {
         bntDoorAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                bntDoorAction.setText("Loading...");
                 KeylessApplication.client.get(toggle_url,handler);
             }
         });
+
+        bntDoorAction.setText("Loading...");
+        KeylessApplication.client.get(toggle_url, handler);
 
     }
 
@@ -139,50 +158,57 @@ public class MainActivity extends AppCompatActivity {
 
     private void errorToast(){
         Toast.makeText(getApplicationContext(),"Error on connection with server",Toast.LENGTH_SHORT).show();
-        progressBar.setVisibility(View.GONE);
+        bntDoorAction.setText("Error");
+
     }
 
 
     @Override
     protected void onResume() {
         super.onResume();
-        KeylessApplication.client.get(status_url, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                super.onSuccess(statusCode, headers, response);
-
-                if (!response.isNull("status")) {
-
-                    try {
-                        manageStatus(response.getString("status"));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-
-                    progressBar.setVisibility(View.GONE);
-                }
-
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                super.onFailure(statusCode, headers, responseString, throwable);
-                errorToast();
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
-                errorToast();
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
-                errorToast();
-
-            }
-        });
+//        KeylessApplication.client.get(status_url, new JsonHttpResponseHandler() {
+//            @Override
+//            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+//                super.onSuccess(statusCode, headers, response);
+//
+//                if (!response.isNull("status")) {
+//
+//                    try {
+//                        manageStatus(response.getString("status"));
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+//                super.onFailure(statusCode, headers, responseString, throwable);
+//                errorToast();
+//                bntDoorAction.setText("Error");
+//
+//            }
+//
+//            @Override
+//            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+//                super.onFailure(statusCode, headers, throwable, errorResponse);
+//                errorToast();
+//                bntDoorAction.setText("Error");
+//
+//            }
+//
+//            @Override
+//            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+//                super.onFailure(statusCode, headers, throwable, errorResponse);
+//                errorToast();
+//                bntDoorAction.setText("Error");
+//
+//            }
+//
+//
+//
+//        });
     }
 }

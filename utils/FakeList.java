@@ -26,12 +26,13 @@ public class FakeList extends AppCompatActivity{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle("Event list");
+        setTitle("Events list");
         setContentView(R.layout.lista);
         ListView listView;
         ArrayAdapter<String> arrayAdapter;
                 (listView = (ListView) findViewById(R.id.listView)).setAdapter(arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,
-                        new String[]{"item1", "item2", "item3", "Intel Hackaton", "item4", "item5", "item6", "item7", "item8", "item9", "item10", "item11"}
+                        new String[]{"Fitness gym (public)", "Termini Station (public)", "My Home (private)", "Intel Hackaton (public)",
+                                "Codemotion (public)"}
                 ) {
                     @Override
                     public View getView(int position, View convertView, ViewGroup parent) {
